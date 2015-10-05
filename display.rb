@@ -1,25 +1,37 @@
-# require_relative "board"
+require_relative "board"
 require "colorize"
 require_relative "cursorable"
 class Display
   include Cursorable
 
-  def initialize(board = nil)
-    @board = empty_board
+  def initialize(board)
+    @board = board
     @cursor_pos = [0,0]
     @selected = false
   end
 
+  def get_things
+    start_pos = get_piece
+    end_pos = move_piece
+
   def get_piece
-    until (pos = get_input)
+    until (start_pos = get_input)
       system("clear")
       render
     end
-    pos
+    start_pos
+  end
+
+  def move_piece
+    until (end_pos = get_input)
+      system("clear")
+      render
+    end
+    end_pos
   end
 
   def empty_board
-    @board = Array.new(8) { Array.new(8) {"  "} }
+    @display = Array.new(8) { Array.new(8) {"  "} }
   end
 
   def render

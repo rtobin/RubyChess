@@ -3,7 +3,7 @@ require_relative "pieces"
 class Board
 
   def self.starting_board
-    board = Array.new(8) { Array.new(8) }
+    board = Array.new(8) { Array.new(8) {"  "} }
     [0,  1].each { |i| board[i].map! { |el| el = Piece.new(:black) } }
     [-2, -1].each { |i| board[i].map! { |el| el = Piece.new(:white) } }
 
@@ -15,7 +15,7 @@ class Board
   end
 
 
-  def move(start_pos, end_pos)
+  def move_logic(start_pos, end_pos)
     raise "No piece there!" if board[start_pos].empty?
     raise "Cannot move there!" unless board[end_pos].empty? # check for good moves
     @board[start_pos]
@@ -23,11 +23,15 @@ class Board
     @board[start_pos] = nil # unless eating
   end
 
+  def empty_space?(start_pos)
+    return false if empty_spaces.include?(start_pos)
+    true
+  end
   def empty_spaces
     empty_spaces = []
     (0..7).each do |row|
       (0..7).each do |col|
-        empty_spaces.concat([row, col]) if board[row, col].nil?
+        empty_spaces.concat([row, col]) if board[row, col] == "  "
       end
     end
     empty_spaces #filler for "valid spaces"

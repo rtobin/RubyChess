@@ -16,7 +16,13 @@ class Chess
   end
 
   def player_input
-    pos = [1,2]
+    begin
+      start_pos = get_piece
+      retry if @board.empty_space?(start_pos)
+      end_pos = move_piece
+      retry if @board.invalid_move?(start_pos, end_pos)
+    end
+    [start_pos, end_pos].move_logic
   end
 
   def gameover?
