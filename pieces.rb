@@ -12,16 +12,21 @@ class Piece
 end
 
 class SlidingPiece < Piece
-
-  def move_to_target?(target) # [row, col]
-    self.move_dirs.each do |pos|
-      if target[0] % pos[0] == 0 && target[1] % pos[1] == 0
-        return true
-      end
-    end
-    false
+  # in board class?
+  # def move_to_target?(target) # [row, col]
+  #   self.move_dirs.each do |pos|
+  #     if target[0] % pos[0] == 0 && target[1] % pos[1] == 0
+  #       return true
+  #     end
+  #   end
+  #   false
+  # end
+  def valid_move?
   end
-  
+
+  def spaces_to_target(target) #for collision
+  end
+
 end
 
 class SteppingPiece < Piece

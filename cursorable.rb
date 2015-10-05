@@ -68,10 +68,6 @@ module Cursorable
 
   def update_pos(diff)
     new_pos = [@cursor_pos[0] + diff[0], @cursor_pos[1] + diff[1]]
-    @cursor_pos = new_pos if @board.in_bounds?(new_pos)
+    @cursor_pos = [new_pos[0] % 8, new_pos[1] % 8]
   end
-end
-
-if __FILE__ == $PROGRAM:
-  help = Cursorable.new
 end

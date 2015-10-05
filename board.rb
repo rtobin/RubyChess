@@ -4,9 +4,8 @@ class Board
 
   def self.starting_board
     board = Array.new(8) { Array.new(8) }
-    [0, 1 , -2, -1].each do |i|
-      board[i].map! { |el| el = Piece.new } # choose colors and pieces later
-    end
+    [0,  1].each { |i| board[i].map! { |el| el = Piece.new(:black) } }
+    [-2, -1].each { |i| board[i].map! { |el| el = Piece.new(:white) } }
 
     Board.new(board)
   end
@@ -15,19 +14,11 @@ class Board
     @board = (board ||= self.class.starting_board)
   end
 
-  def []=(pos, val)
-    row, col = pos
-    @board[row][col] = val
-  end
-
-  def [](pos)
-    row, col = pos
-    @board[row][col]
-  end
 
   def move(start_pos, end_pos)
     raise "No piece there!" if board[start_pos].empty?
     raise "Cannot move there!" unless board[end_pos].empty? # check for good moves
+    @board[start_pos]
     @board[end_pos] = @board[start_pos]
     @board[start_pos] = nil # unless eating
   end
@@ -42,4 +33,13 @@ class Board
     empty_spaces #filler for "valid spaces"
   end
 
+  def []=(pos, val)
+    row, col = pos
+    @board[row][col] = val
+  end
+
+  def [](pos)
+    row, col = pos
+    @board[row][col]
+  end
 end
