@@ -71,3 +71,7 @@ module Cursorable
     @cursor_pos = new_pos if @board.in_bounds?(new_pos)
   end
 end
+
+if __FILE__ == $PROGRAM:
+  help = Cursorable.new
+end
