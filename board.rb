@@ -1,5 +1,5 @@
 require_relative "pieces"
-
+require "byebug"
 class Board
   attr_reader :board
 
@@ -25,33 +25,52 @@ class Board
   def move
   end
 
-  def valid_moves(piece)
+  def possible_moves(piece)
+    byebug
     some_moves = []
     moves = piece.board_moves
     color = piece.color
-    moves.each do |move|
 
-      # stepping move
-      if move.size == 1
-        space = self[move[0]]
-        some_moves << move[0] unless space.is_a?(Piece) && space. color == color
+    if piece.is_a?(Pawn) # Board.inbounds? called here instead of Pieces because we are dumb
+      attacking_moves = moves.pop(2)
 
-      # sliding move
-      else
-        blocked = false
-        move.each do |pos, i|
-          space = self[pos]
-          if space.is_a?(Piece)
-            blocked = true
-            some_moves << pos unless space.color == color
-          else
-            some_moves << pos
+      attacking_moves.each do |move|
+        target = self[move]
+        some_moves << move if target.is_a?(Piece) && target.color != color && Board.inbounds?(move)
+      end
+
+      moves.each do |move|
+        target = self[move]
+        some_moves << move unless target.is_a?(Piece)
+      end
+
+    else
+      moves.each do |move|
+
+        # stepping move
+        if piece.is_a?(SteppingPiece) || piece.is_a?(Pawn)
+          target = self[move]
+          some_moves << move if !target.is_a?(Piece) || target.color != color
+
+        # sliding move
+        elsif piece.is_a?(SlidingPiece)
+          blocked = false
+          move.each do |pos|
+            target = self[pos]
+
+            if target.is_a?(Piece)
+              blocked = true
+              some_moves << pos unless target.color == color
+            else
+              some_moves << pos
+            end
+
           end
         end
       end
-
-      some_moves
     end
+
+    some_moves
   end
 
   def dup
@@ -68,7 +87,7 @@ class Board
 
 ## Bounds checking class method##
   def self.inbounds?(pos)
-    pos.all { |i| i.between?(0, 7) }
+    pos.all? { |i| i.between?(0, 7) }
   end
 
 
@@ -99,4 +118,11 @@ class Board
     row, col = pos
     @board[row][col]
   end
+end
+
+
+if __FILE__ == $PROGRAM_NAME
+  board = Board.starting_board
+  piece = board[[6,0]]
+  p board.possible_moves(piece)
 end

@@ -35,7 +35,7 @@ class Piece
     }
 
 
-  attr_accessor :team_color, :name
+  attr_accessor :color, :name
 
   def self.create_piece(piece, pos, color)
      case piece
@@ -54,9 +54,9 @@ class Piece
      end
   end
 
-  def initialize(current_pos, team_color, name)
+  def initialize(current_pos, color, name)
     @current_pos = current_pos
-    @team_color = team_color
+    @color = color
     @name = name
   end
 
@@ -65,7 +65,7 @@ class Piece
   end
 
   def dup
-    piece = self.class.new(self.current_pos, self.team_color)
+    piece = self.class.new(self.current_pos, self.color)
     piece.first_move = self.first_move if self.is_a?(Pawn)
   end
 
@@ -73,27 +73,29 @@ class Piece
 end
 
 class Pawn < Piece
+  attr_reader :first_move
 
-  def initialize(current_pos, team_color, name, first_move = true)
+  def initialize(current_pos, color, name, first_move = true)
     @first_move = first_move
-    super(current_pos, team_color, name)
+    super(current_pos, color, name)
   end
 
   def board_moves
     x, y = @current_pos
     positions = []
-    if team_color == :black
+    if color == :black
       # positions = unidirectional forward moves and possible attack moves
       # and transitory "first" move for black and white pieces.
-      first_move ? positions << [[x + 1, y], [x + 2, y], [x + 1, y + 1], [x + 1, y - 1]]
-              :  ( positions << [[x + 1, y], [x + 1, y + 1], [x + 1, y - 1]] if Board.inbounds?([x + dx, y + dy]) )
+      first_move ? positions += [[x + 1, y], [x + 2, y], [x + 1, y + 1], [x + 1, y - 1]]
+              :  ( positions += [[x + 1, y], [x + 1, y + 1], [x + 1, y - 1]] )
 
     else
 
-      first_move ? positions << [[x - 1, y], [x - 2, y], [x - 1, y + 1], [x - 1, y - 1]]
-              :  ( positions << [[x - 1, y], [x - 1, y + 1], [x - 1, y - 1]] if Board.inbounds?([x + dx, y + dy]) )
+      first_move ? positions += [[x - 1, y], [x - 2, y], [x - 1, y + 1], [x - 1, y - 1]]
+              :  ( positions += [[x - 1, y], [x - 1, y + 1], [x - 1, y - 1]] )
 
     end
+
     positions
   end
 end
