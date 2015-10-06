@@ -15,18 +15,54 @@ class Board
       positions.each { |pos| board[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :black)}
     end
 
-    # [0,  1].each { |i| board[i].map! { |el| el = Piece.new(:black) } }
-    # [-2, -1].each { |i| board[i].map! { |el| el = Piece.new(:white) } }
     Board.new(board)
-    #puts board
   end
 
   def initialize(board = nil)
     @board = (board ||= self.class.starting_board)
   end
 
+  def move
+  end
 
-  def move_logic(start_pos, end_pos)
+  def valid_moves(piece)
+    some_moves = []
+    moves = piece.board_moves
+    color = piece.color
+    moves.each do |move|
+
+      # stepping move
+      if move.size == 1
+        space = self[move[0]]
+        some_moves << move[0] unless space.is_a?(Piece) && space. color == color
+
+      # sliding move
+      else
+        blocked = false
+        move.each do |pos, i|
+          space = self[pos]
+          if space.is_a?(Piece)
+            blocked = true
+            some_moves << pos unless space.color == color
+          else
+            some_moves << pos
+          end
+        end
+      end
+
+      some_moves
+    end
+  end
+
+  def dup
+    @board.map do |row|
+      row.map do |space|
+        space.dup if space
+      end
+    end
+  end
+
+  def valid_move?(start_pos, end_pos)
 
   end
 

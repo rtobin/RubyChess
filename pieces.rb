@@ -64,6 +64,12 @@ class Piece
     PIECE_UNICODE[self.name]
   end
 
+  def dup
+    piece = self.class.new(self.current_pos, self.team_color)
+    piece.first_move = self.first_move if self.is_a?(Pawn)
+  end
+
+
 end
 
 class Pawn < Piece
@@ -75,15 +81,20 @@ class Pawn < Piece
 
   def board_moves
     x, y = @current_pos
+    positions = []
     if team_color == :black
-
-      first_move ? [[x + 1, y], [x + 2, y]] : ( [[x + 1, y]] if Board.inbounds?([x + dx, y + dy]) )
+      # positions = unidirectional forward moves and possible attack moves
+      # and transitory "first" move for black and white pieces.
+      first_move ? positions << [[x + 1, y], [x + 2, y], [x + 1, y + 1], [x + 1, y - 1]]
+              :  ( positions << [[x + 1, y], [x + 1, y + 1], [x + 1, y - 1]] if Board.inbounds?([x + dx, y + dy]) )
 
     else
 
-      first_move ? [[x - 1, y], [x - 2, y]] : ( [[x - 1, y]] if Board.inbounds?([x + dx, y + dy]) )
+      first_move ? positions << [[x - 1, y], [x - 2, y], [x - 1, y + 1], [x - 1, y - 1]]
+              :  ( positions << [[x - 1, y], [x - 1, y + 1], [x - 1, y - 1]] if Board.inbounds?([x + dx, y + dy]) )
 
     end
+    positions
   end
 end
 
