@@ -11,32 +11,78 @@ class Piece
 
 end
 
-class SlidingPiece < Piece
-  # in board class?
-  # def move_to_target?(target) # [row, col]
-  #   self.move_dirs.each do |pos|
-  #     if target[0] % pos[0] == 0 && target[1] % pos[1] == 0
-  #       return true
-  #     end
-  #   end
-  #   false
-  # end
-  def valid_move?
+class Pawn < Piece
+
+  def initialize(current_pos, team_color, first_move = true)
+    @first_move = first_move
+    super(current_pos, team_color)
   end
 
-  def spaces_to_target(target) #for collision
+  def board_moves
+    x, y = @current_pos
+    if team_color == :black
+
+      first_move ? [[x + 1, y], [x + 2, y]] : [[x + 1, y]]
+
+    else
+
+      first_move ? [[x - 1, y], [x - 2, y]] : [[x - 1, y]]
+
+    end
+  end
+
+
+  def conditional_moves
+    PAWN_TAKE = [
+      [1, 1],
+      [1,-2]
+    ]
+end
+
+class SlidingPiece < Piece
+
+  def board_moves
+    positions = []
+    x, y = @current_pos
+    self.class.DELTAS.each do |delta|
+      dx, dy = delta
+
+      step = 1
+      moves = []
+      while (x + dx * step).between?(0, 7) && (y + dy * step).between?(0, 7)
+        moves << [x + dx * step, y + dy * step]
+        step +=1
+      end
+
+      positions << moves
+    end
+
+    positions
   end
 
 end
 
 class SteppingPiece < Piece
 
+  def board_moves
+    positions = []
+    x, y = @current_pos
+    self.class.DELTAS.each do |delta|
+      dx, dy = delta
+      if (x + dx).between?(0, 7) && (y + dy).between?(0, 7)
+        positions << [x + dx, y + dy]
+      end
+    end
+    positions
+  end
+
+
 end
 
 class Bishop < SlidingPiece
 
   def move_dirs
-    BISHOP_DELTAS = [
+    DELTAS = [
       [1,  1],
       [1, -1],
       [-1, 1],
@@ -47,7 +93,7 @@ end
 
 class Rook < SlidingPiece
   def move_dirs
-    ROOK_DELTAS =[
+    DELTAS =[
       [0, 1],
       [1, 0],
       [-1, 0],
@@ -57,7 +103,7 @@ end
 
 class Queen < SlidingPiece
   def move_dirs
-    QUEEN_DELTAS = [
+    DELTAS = [
       [1, 1 ],
       [1, -1],
       [-1, 1],
@@ -72,7 +118,7 @@ end
 
 class Knight < SteppingPiece
   def move_dirs
-    KNIGHT_DELTAS = [
+    DELTAS = [
       [ 2,  1],
       [ 2, -1],
       [-2,  1],
@@ -87,7 +133,7 @@ end
 
 class King < SteppingPiece
   def move_dirs
-    KING_DELTAS = [
+    DELTAS = [
       [0 ,  1],
       [0 , -1],
       [1 ,  0],
@@ -98,17 +144,4 @@ class King < SteppingPiece
       [-1, -1]
     ]
   end
-end
-
-class Pawn < Piece
-  def move_dirs
-    PAWN_DELTAS = [
-      [1, 0],
-      [2, 0],
-    ]
-  def conditional_moves
-    PAWN_TAKE = [
-      [1, 1],
-      [1,-2]
-    ]
 end
