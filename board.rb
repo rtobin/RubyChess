@@ -17,14 +17,23 @@ class Board
 
   def move_logic(start_pos, end_pos)
 
-
   end
 
-## Bounds checking ##
-  def inbounds?([position])
-    position[0].between?(0, 7) && position[1].between?(0, 7)
+## Bounds checking class method##
+  def self.inbounds?(pos)
+    pos.all { |i| i.between?(0, 7) }
   end
 
+
+  
+#
+#
+#
+#
+#
+#
+#
+#
 ## Legacy software ##
   def empty_space?(start_pos)
     return false if empty_spaces.include?(start_pos)

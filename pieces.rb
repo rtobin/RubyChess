@@ -15,6 +15,7 @@ class Pawn < Piece
 
   def initialize(current_pos, team_color, first_move = true)
     @first_move = first_move
+    @name = :pawn
     super(current_pos, team_color)
   end
 
@@ -31,19 +32,13 @@ class Pawn < Piece
     end
   end
 
-
-  def conditional_moves
-    PAWN_TAKE = [
-      [1, 1],
-      [1,-2]
-    ]
-end
-
 class SlidingPiece < Piece
 
   def board_moves
     positions = []
     x, y = @current_pos
+
+    # DELTAS is defined in subclasses
     self.class.DELTAS.each do |delta|
       dx, dy = delta
 
@@ -67,6 +62,8 @@ class SteppingPiece < Piece
   def board_moves
     positions = []
     x, y = @current_pos
+
+    # DELTAS is defined in subclasses
     self.class.DELTAS.each do |delta|
       dx, dy = delta
       if Board.inbounds?([x + dx, y + dy])
@@ -80,68 +77,83 @@ class SteppingPiece < Piece
 end
 
 class Bishop < SlidingPiece
+  DELTAS = [
+    [1,  1],
+    [1, -1],
+    [-1, 1],
+    [-1, -1]
+  ]
 
-  def move_dirs
-    DELTAS = [
-      [1,  1],
-      [1, -1],
-      [-1, 1],
-      [-1, -1]
-    ]
+  def initialize(current_pos, team_color)
+    super
+    @name = :bishop
   end
 end
 
 class Rook < SlidingPiece
-  def move_dirs
-    DELTAS =[
-      [0, 1],
-      [1, 0],
-      [-1, 0],
-      [0, -1]
-    ]
+  DELTAS =[
+    [0, 1],
+    [1, 0],
+    [-1, 0],
+    [0, -1]
+  ]
+
+  def initialize(current_pos, team_color)
+    super
+    @name = :rook
+  end
 end
 
 class Queen < SlidingPiece
-  def move_dirs
-    DELTAS = [
-      [1, 1 ],
-      [1, -1],
-      [-1, 1],
-      [-1, -1],
-      [0, 1],
-      [1, 0],
-      [-1, 0],
-      [0, -1]
-    ]
+  DELTAS = [
+    [1, 1 ],
+    [1, -1],
+    [-1, 1],
+    [-1, -1],
+    [0, 1],
+    [1, 0],
+    [-1, 0],
+    [0, -1]
+  ]
+
+  def initialize(current_pos, team_color)
+    super
+    @name = :queen
   end
 end
 
 class Knight < SteppingPiece
-  def move_dirs
-    DELTAS = [
-      [ 2,  1],
-      [ 2, -1],
-      [-2,  1],
-      [-2, -1],
-      [ 1,  2],
-      [ 1, -2],
-      [-1,  2],
-      [-1, -2]
-    ]
+  DELTAS = [
+    [ 2,  1],
+    [ 2, -1],
+    [-2,  1],
+    [-2, -1],
+    [ 1,  2],
+    [ 1, -2],
+    [-1,  2],
+    [-1, -2]
+  ]
+
+  def initialize(current_pos, team_color)
+    super
+    @name = :knight
   end
 end
 
 class King < SteppingPiece
-  def move_dirs
-    DELTAS = [
-      [0 ,  1],
-      [0 , -1],
-      [1 ,  0],
-      [-1,  0],
-      [ 1,  1],
-      [ 1, -1],
-      [-1,  1],
-      [-1, -1]
-    ]
+  DELTAS = [
+    [0 ,  1],
+    [0 , -1],
+    [1 ,  0],
+    [-1,  0],
+    [ 1,  1],
+    [ 1, -1],
+    [-1,  1],
+    [-1, -1]
+  ]
+
+  def initialize(current_pos, team_color)
+    super
+    @name = :king
   end
 end
