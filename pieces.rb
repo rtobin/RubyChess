@@ -1,22 +1,76 @@
-
+require_relative "board"
 
 
 class Piece
-  attr_accessor :team_color
 
-  def initialize(current_pos, team_color)
+
+    DEFAULT_WHITE_POSITIONS = {
+      :pawn   => [[6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7]],
+      :knight => [[7, 1], [7, 6]],
+      :bishop => [[7, 2], [7, 5]],
+      :rook   => [[7, 0], [7, 7]],
+      :queen  => [[7, 3]],
+      :king   => [[7, 4]],
+      }
+
+      DEFAULT_BLACK_POSITIONS = {
+      :pawn   => [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
+      :knight => [[0, 1], [0, 6]],
+      :bishop => [[0, 2], [0, 5]],
+      :rook   => [[0, 0], [0, 7]],
+      :queen  => [[0, 3]],
+      :king   => [[0, 4]],
+      }
+
+
+
+    PIECE_UNICODE = {
+      king:   "♔",
+      queen:  "♛",
+      rook:   "♜",
+      bishop: "♝",
+      knight: "♞",
+      pawn:   "♟"
+
+    }
+
+
+  attr_accessor :team_color, :name
+
+  def self.create_piece(piece, pos, color)
+     case piece
+     when :pawn
+       Pawn.new(pos, color, piece)
+     when :knight
+       Knight.new(pos, color, piece)
+     when :bishop
+       Bishop.new(pos, color, piece)
+     when :rook
+       Rook.new(pos, color, piece)
+     when :queen
+       Queen.new(pos, color, piece)
+     when :king
+       King.new(pos, color, piece)
+     end
+  end
+
+  def initialize(current_pos, team_color, name)
     @current_pos = current_pos
     @team_color = team_color
+    @name = name
+  end
+
+  def unicode
+    PIECE_UNICODE[self.name]
   end
 
 end
 
 class Pawn < Piece
 
-  def initialize(current_pos, team_color, first_move = true)
+  def initialize(current_pos, team_color, name, first_move = true)
     @first_move = first_move
-    @name = :pawn
-    super(current_pos, team_color)
+    super(current_pos, team_color, name)
   end
 
   def board_moves
@@ -31,6 +85,7 @@ class Pawn < Piece
 
     end
   end
+end
 
 class SlidingPiece < Piece
 
@@ -72,8 +127,6 @@ class SteppingPiece < Piece
     end
     positions
   end
-
-
 end
 
 class Bishop < SlidingPiece
@@ -84,10 +137,7 @@ class Bishop < SlidingPiece
     [-1, -1]
   ]
 
-  def initialize(current_pos, team_color)
-    super
-    @name = :bishop
-  end
+
 end
 
 class Rook < SlidingPiece
@@ -98,10 +148,6 @@ class Rook < SlidingPiece
     [0, -1]
   ]
 
-  def initialize(current_pos, team_color)
-    super
-    @name = :rook
-  end
 end
 
 class Queen < SlidingPiece
@@ -116,10 +162,7 @@ class Queen < SlidingPiece
     [0, -1]
   ]
 
-  def initialize(current_pos, team_color)
-    super
-    @name = :queen
-  end
+
 end
 
 class Knight < SteppingPiece
@@ -134,10 +177,7 @@ class Knight < SteppingPiece
     [-1, -2]
   ]
 
-  def initialize(current_pos, team_color)
-    super
-    @name = :knight
-  end
+
 end
 
 class King < SteppingPiece
@@ -152,8 +192,5 @@ class King < SteppingPiece
     [-1, -1]
   ]
 
-  def initialize(current_pos, team_color)
-    super
-    @name = :king
-  end
+
 end

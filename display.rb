@@ -34,7 +34,7 @@ class Display
     @display = Array.new(8) { Array.new(8) {"  "} }
   end
 
-  def render
+  def render # dummy board
     empty_board
 
     (0..7).each do |row|
