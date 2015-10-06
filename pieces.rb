@@ -22,11 +22,11 @@ class Pawn < Piece
     x, y = @current_pos
     if team_color == :black
 
-      first_move ? [[x + 1, y], [x + 2, y]] : [[x + 1, y]]
+      first_move ? [[x + 1, y], [x + 2, y]] : ( [[x + 1, y]] if Board.inbounds?([x + dx, y + dy]) )
 
     else
 
-      first_move ? [[x - 1, y], [x - 2, y]] : [[x - 1, y]]
+      first_move ? [[x - 1, y], [x - 2, y]] : ( [[x - 1, y]] if Board.inbounds?([x + dx, y + dy]) )
 
     end
   end
@@ -49,7 +49,7 @@ class SlidingPiece < Piece
 
       step = 1
       moves = []
-      while (x + dx * step).between?(0, 7) && (y + dy * step).between?(0, 7)
+      while Board.inbounds?([x + dx, y + dy])
         moves << [x + dx * step, y + dy * step]
         step +=1
       end
@@ -69,7 +69,7 @@ class SteppingPiece < Piece
     x, y = @current_pos
     self.class.DELTAS.each do |delta|
       dx, dy = delta
-      if (x + dx).between?(0, 7) && (y + dy).between?(0, 7)
+      if Board.inbounds?([x + dx, y + dy])
         positions << [x + dx, y + dy]
       end
     end

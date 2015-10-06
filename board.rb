@@ -20,9 +20,10 @@ class Board
 
   end
 
-
-
-
+## Bounds checking ##
+  def inbounds?([position])
+    position[0].between?(0, 7) && position[1].between?(0, 7)
+  end
 
 ## Legacy software ##
   def empty_space?(start_pos)
