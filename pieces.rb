@@ -5,7 +5,7 @@ class Piece
   attr_accessor :team_color
 
   def initialize(current_pos, team_color)
-    @current_pos = start_pos
+    @current_pos = current_pos
     @team_color = team_color
   end
 
@@ -77,8 +77,8 @@ class Knight < SteppingPiece
       [ 2, -1],
       [-2,  1],
       [-2, -1],
-      [1 ,  2],
-      [1 , -2],
+      [ 1,  2],
+      [ 1, -2],
       [-1,  2],
       [-1, -2]
     ]

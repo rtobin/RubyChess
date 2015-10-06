@@ -16,17 +16,20 @@ class Board
 
 
   def move_logic(start_pos, end_pos)
-    raise "No piece there!" if board[start_pos].empty?
-    raise "Cannot move there!" unless board[end_pos].empty? # check for good moves
-    @board[start_pos]
-    @board[end_pos] = @board[start_pos]
-    @board[start_pos] = nil # unless eating
+
+
   end
 
+
+
+
+
+## Legacy software ##
   def empty_space?(start_pos)
     return false if empty_spaces.include?(start_pos)
     true
   end
+
   def empty_spaces
     empty_spaces = []
     (0..7).each do |row|
@@ -36,7 +39,7 @@ class Board
     end
     empty_spaces #filler for "valid spaces"
   end
-
+## Bracket Methods ##
   def []=(pos, val)
     row, col = pos
     @board[row][col] = val
