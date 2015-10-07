@@ -2,24 +2,24 @@ require_relative "pieces"
 class Board
   DIM = 8
 
-  attr_reader :board
+  attr_reader :grid
 
   def self.starting_board
-    board = Array.new(DIM) { Array.new(DIM) }
+    grid = Array.new(DIM) { Array.new(DIM) }
 
     Piece::DEFAULT_WHITE_POSITIONS.each do |piece, positions|
-      positions.each { |pos| board[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :white)}
+      positions.each { |pos| grid[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :white)}
     end
 
     Piece::DEFAULT_BLACK_POSITIONS.each do |piece, positions|
-      positions.each { |pos| board[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :black)}
+      positions.each { |pos| grid[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :black)}
     end
 
-    Board.new(board)
+    Board.new(grid)
   end
 
-  def initialize(board = nil)
-    @board = (board ||= self.class.starting_board)
+  def initialize(grid)
+    @grid = grid
     @king_pieces = get_king_pieces
   end
 
@@ -27,15 +27,13 @@ class Board
     self[end_pos] = self[start_pos]
     self[start_pos] = nil
     self[end_pos].current_pos = end_pos
-    #some_board[end_pos[0]][end_pos[1]] = some_board[start_pos[0]][start_pos[1]]
-    #some_board[start_pos[0]][start_pos[1]] = nil
-    #some_board[end_pos[0]][end_pos[1]].current_pos = end_pos
   end
 
-  def valid_move?(start_pos, end_pos)
+  def valid_move?(piece, end_pos)
     # other validation is done in display
     # return false if the move puts oneself in check
-    color = self[start_pos].color
+    color = piece.color
+    start_pos = piece.current_pos
     move(start_pos, end_pos)
     result = true
     result = false if in_check?(color)
@@ -50,7 +48,7 @@ class Board
     king_pos = find_king(color)
     (0...DIM).each do |row|
       (0...DIM).each do |col|
-        piece = @board[row][col]
+        piece = @grid[row][col]
         if piece && piece.color != color
           possible_moves(piece).each { |pos| return true if pos == king_pos}
         end
@@ -68,7 +66,7 @@ class Board
     kings = []
     (0...DIM).each do |row|
       (0...DIM).each do |col|
-        space = @board[row][col]
+        space = @grid[row][col]
         kings << space if space.is_a?(King)
       end
     end
@@ -123,7 +121,7 @@ class Board
   end
 
   def dup
-    @board.map do |row|
+    @grid.map do |row|
       row.map do |space|
         space.is_a?(Piece) ? space.dup : nil
       end
@@ -140,36 +138,12 @@ class Board
   ## Bracket Methods ##
   def []=(pos, val)
     row, col = pos
-    @board[row][col] = val
+    @grid[row][col] = val
   end
 
   def [](pos)
     row, col = pos
-    @board[row][col]
+    @grid[row][col]
   end
 
-
-## Legacy code ##
-  def empty_space?(start_pos)
-    return false if empty_spaces.include?(start_pos)
-    true
-  end
-
-  def empty_spaces
-    empty_spaces = []
-    (0...DIM).each do |row|
-      (0...DIM).each do |col|
-        empty_spaces.concat([row, col]) if board[row, col] == "  "
-      end
-    end
-    empty_spaces #filler for "valid spaces"
-  end
-
-end
-
-
-if __FILE__ == $PROGRAM_NAME
-  board = Board.starting_board
-  piece = board[[6,0]]
-  p board.possible_moves(piece)
 end

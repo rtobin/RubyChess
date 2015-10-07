@@ -1,5 +1,7 @@
 require_relative "board"
 require_relative "display"
+require_relative "players"
+require_relative "pieces"
 
 
 class Chess
@@ -7,28 +9,30 @@ class Chess
     @current_player, @next_player = player1, player2
     @current_player.set_color(:white)
     @next_player.set_color(:black)
-    @board = (board ||= Board.starting_board)
-    @screen = Display.new(@board)
+    @playboard = (board ||= Board.starting_board)
+    @screen = Display.new(@playboard)
 
   end
 
-  def play_round
-    #render Display
-    #player 1 goes
-    #board does things
-    #switch players
-    #gameover?
+  def play
+    while true
+      move
+      switch_players
+    end
   end
 
-  def get_move
+  def move
     if @current_player.is_a?(ChessAI)
     else
       while true
         start_pos = @screen.get_start_square(@current_player.color)
         end_pos = @screen.get_target_square
 
+        break if end_pos
       end
+    end
 
+    @playboard.move(start_pos, end_pos)
   end
 
   def switch_players
@@ -39,4 +43,11 @@ class Chess
   end
 
 
+end
+
+if __FILE__ == $PROGRAM_NAME
+  ryan = Player.new("Ryan")
+  tracy = Player.new("Tracy")
+  game = Chess.new(ryan, tracy)
+  game.play
 end

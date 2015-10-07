@@ -12,7 +12,7 @@ class Piece
       :king   => [[7, 4]],
       }
 
-      DEFAULT_BLACK_POSITIONS = {
+    DEFAULT_BLACK_POSITIONS = {
       :pawn   => [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
       :knight => [[0, 1], [0, 6]],
       :bishop => [[0, 2], [0, 5]],

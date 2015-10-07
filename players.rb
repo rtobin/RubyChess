@@ -4,10 +4,23 @@
 # 2 - consider opponent's possible move response
 # 3 - consider AI possible moves after opponent's possible responses to prevoious
 
-Move = Struct.new(:color, :piece, :start_pos, :end_pos)
+# Move = Struct.new(:color, :piece, :start_pos, :end_pos)
 
-class ChessAI
-  PIECE_POINTS ={
+class Player
+  attr_reader :name, :color
+
+  def initialize(name, board = nil)
+    # doesn't do anything with board
+    @name = name
+  end
+
+  def set_color(color)
+    @color = color
+  end
+end
+
+class ChessAI < Player
+  PIECE_POINTS = {
     pawn:   1.0,
     knight: 2.4,
     bishop: 4.0,
@@ -18,12 +31,12 @@ class ChessAI
 
   S_VAL = 0.5
 
-  attr_reader :name, :color, :pieces_avail
+  attr_reader :pieces_avail
 
-  def initialize(color, board, name = nil, level = 0)
+  def initialize(name, board, level = 0)
     # level determines "depth" of search
-    @name = (name ||= "Chess Master Bot")
-    @color = color
+    name ||= "Chess Master Bot"
+    super(name, board)
     @pieces = pieces_avail
     @prev_move_list = [] # checks the amount of "level" moves ahead
   end

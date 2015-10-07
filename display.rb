@@ -1,12 +1,12 @@
 require_relative "cursorable"
 require "colorize"
-require "pieces"
+require_relative "pieces"
 
 class Display
   include Cursorable
 
-  def initialize(board)
-    @board = board
+  def initialize(playboard)
+    @playboard = playboard
     @dim = Board::DIM
     @cursor_pos = [0, 0]
     @selected_pos = nil
@@ -18,15 +18,16 @@ class Display
       system("clear")
       render_board
       input = get_input
-
-      space = @board[input]
-
-      if input.is_a?(Array) && space.is_a?(Piece) && space.color == color
-        @selected_pos = input
-        @plays = @board.possible_moves(@board[input])
-        if @plays.empty?
-          @selected_pos = nil
-          @plays = nil
+      if input.is_a?(Array)
+        space = @playboard[input]
+        if space.is_a?(Piece) && space.color == color
+          @selected_pos = input
+          @plays = @playboard.possible_moves(@playboard[input])
+          @plays.select { |move| @playboard.valid_move?(space, move) }
+          if @plays.empty?
+            @selected_pos = nil
+            @plays = nil
+          end
         end
       end
     end
@@ -41,20 +42,33 @@ class Display
     render_board
     input = get_input
 
+    until input
+      system("clear")
+      render_board
+      input = get_input
+    end
+
     if input == :unselect
       @selected_pos = nil
       @plays = nil
       return nil
     end
 
-    (input && @plays.include?(input)) ? input : nil
+    if input.is_a?(Array) && @plays.include?(input)
+      @selected_pos = nil
+      @plays = nil
+      return input
+    end      
+
+    nil
+
   end
 
   def render_board # dummy board
     (0...@dim).each do |row|
       line = ""
       (0...@dim).each do |col|
-        el = @board[[row, col]]
+        el = @playboard[[row, col]]
         color = el.color unless el.nil?
 
         # cusor position
