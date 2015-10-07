@@ -3,7 +3,6 @@ require_relative "board"
 
 class Piece
 
-
     DEFAULT_WHITE_POSITIONS = {
       :pawn   => [[6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7]],
       :knight => [[7, 1], [7, 6]],
@@ -25,12 +24,12 @@ class Piece
 
 
     PIECE_UNICODE = {
-      king:   "♔",
-      queen:  "♛",
-      rook:   "♜",
-      bishop: "♝",
-      knight: "♞",
-      pawn:   "♟"
+      king:   ["♚", "♔"],
+      queen:  ["♛", "♕"],
+      rook:   ["♜", "♖"],
+      bishop: ["♝", "♗"],
+      knight: ["♞", "♘"],
+      pawn:   ["♟", "♙"]
 
     }
 
@@ -40,28 +39,27 @@ class Piece
   def self.create_piece(piece, pos, color)
      case piece
      when :pawn
-       Pawn.new(pos, color, piece)
+       Pawn.new(pos, color)
      when :knight
-       Knight.new(pos, color, piece)
+       Knight.new(pos, color)
      when :bishop
-       Bishop.new(pos, color, piece)
+       Bishop.new(pos, color)
      when :rook
-       Rook.new(pos, color, piece)
+       Rook.new(pos, color)
      when :queen
-       Queen.new(pos, color, piece)
+       Queen.new(pos, color)
      when :king
-       King.new(pos, color, piece)
+       King.new(pos, color)
      end
   end
 
-  def initialize(current_pos, color, name)
+  def initialize(current_pos, color)
     @current_pos = current_pos
     @color = color
-    @name = name
   end
 
   def unicode
-    PIECE_UNICODE[self.name]
+    PIECE_UNICODE[self.class::NAME]
   end
 
   def dup
@@ -73,11 +71,12 @@ class Piece
 end
 
 class Pawn < Piece
+  NAME = :pawn
   attr_reader :first_move
 
-  def initialize(current_pos, color, name, first_move = true)
+  def initialize(current_pos, color, first_move = true)
     @first_move = first_move
-    super(current_pos, color, name)
+    super(current_pos, color)
   end
 
   def board_moves
@@ -107,12 +106,12 @@ class SlidingPiece < Piece
     x, y = @current_pos
 
     # DELTAS is defined in subclasses
-    self.class.DELTAS.each do |delta|
+    self.class::DELTAS.each do |delta|
       dx, dy = delta
 
       step = 1
       moves = []
-      while Board.inbounds?([x + dx, y + dy])
+      while Board.inbounds?([x + dx * step, y + dy * step])
         moves << [x + dx * step, y + dy * step]
         step +=1
       end
@@ -132,7 +131,7 @@ class SteppingPiece < Piece
     x, y = @current_pos
 
     # DELTAS is defined in subclasses
-    self.class.DELTAS.each do |delta|
+    self.class::DELTAS.each do |delta|
       dx, dy = delta
       if Board.inbounds?([x + dx, y + dy])
         positions << [x + dx, y + dy]
@@ -143,6 +142,7 @@ class SteppingPiece < Piece
 end
 
 class Bishop < SlidingPiece
+  NAME = :bishop
   DELTAS = [
     [1,  1],
     [1, -1],
@@ -154,6 +154,7 @@ class Bishop < SlidingPiece
 end
 
 class Rook < SlidingPiece
+  NAME = :rook
   DELTAS =[
     [0, 1],
     [1, 0],
@@ -164,6 +165,7 @@ class Rook < SlidingPiece
 end
 
 class Queen < SlidingPiece
+  NAME = :queen
   DELTAS = [
     [1, 1 ],
     [1, -1],
@@ -179,6 +181,7 @@ class Queen < SlidingPiece
 end
 
 class Knight < SteppingPiece
+  NAME = :knight
   DELTAS = [
     [ 2,  1],
     [ 2, -1],
@@ -190,10 +193,10 @@ class Knight < SteppingPiece
     [-1, -2]
   ]
 
-
 end
 
 class King < SteppingPiece
+  NAME = :king
   DELTAS = [
     [0 ,  1],
     [0 , -1],
@@ -204,6 +207,4 @@ class King < SteppingPiece
     [-1,  1],
     [-1, -1]
   ]
-
-
 end

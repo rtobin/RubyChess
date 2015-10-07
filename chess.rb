@@ -1,10 +1,14 @@
-
+require_relative "board"
+require_relative "display"
 
 
 class Chess
-  def initialize(board = nil)
-    @players = [1, 2]
-    @board = Board.new(board)
+  def initialize(player1, player2, board = nil)
+    @player1, @player2 = player1, player2
+    @player1.set_color(:white)
+    @player2.set_color(:black)
+    @board = (board ||= Board.starting_board)
+
   end
 
   def play_round
@@ -16,13 +20,7 @@ class Chess
   end
 
   def player_input
-    begin
-      start_pos = get_piece
-      retry if @board.empty_space?(start_pos)
-      end_pos = move_piece
-      retry if @board.invalid_move?(start_pos, end_pos)
-    end
-    [start_pos, end_pos].move_logic
+    
   end
 
   def gameover?
@@ -30,3 +28,9 @@ class Chess
 
 
 end
+
+board = Board.starting_board
+pos = [3,3]
+board[pos] = Queen.new(pos, :white)
+screen = Display.new(board)
+screen.get_start_square
