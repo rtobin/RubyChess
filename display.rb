@@ -33,7 +33,7 @@ class Display
 
     system("clear")
     render_board
-    nil
+    @selected_pos
   end
 
   def get_target_square

@@ -34,7 +34,7 @@ class Piece
     }
 
 
-  attr_accessor :color, :name
+  attr_accessor :color, :name, :current_pos
 
   def self.create_piece(piece, pos, color)
      case piece

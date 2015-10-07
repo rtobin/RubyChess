@@ -4,10 +4,11 @@ require_relative "display"
 
 class Chess
   def initialize(player1, player2, board = nil)
-    @player1, @player2 = player1, player2
-    @player1.set_color(:white)
-    @player2.set_color(:black)
+    @current_player, @next_player = player1, player2
+    @current_player.set_color(:white)
+    @next_player.set_color(:black)
     @board = (board ||= Board.starting_board)
+    @screen = Display.new(@board)
 
   end
 
@@ -19,8 +20,19 @@ class Chess
     #gameover?
   end
 
-  def player_input
-    
+  def get_move
+    if @current_player.is_a?(ChessAI)
+    else
+      while true
+        start_pos = @screen.get_start_square(@current_player.color)
+        end_pos = @screen.get_target_square
+
+      end
+
+  end
+
+  def switch_players
+    @current_player, @next_player = @next_player, @current_player
   end
 
   def gameover?
@@ -28,9 +40,3 @@ class Chess
 
 
 end
-
-board = Board.starting_board
-pos = [3,3]
-board[pos] = Queen.new(pos, :white)
-screen = Display.new(board)
-screen.get_start_square
