@@ -15,7 +15,7 @@ class Chess
   end
 
   def play
-    while true
+    until gameover?
       move
       switch_players
     end
@@ -25,7 +25,7 @@ class Chess
     if @current_player.is_a?(ChessAI)
     else
       while true
-        start_pos = @screen.get_start_square(@current_player.color)
+        start_pos = select_piece(@current_player.color)
         end_pos = @screen.get_target_square
 
         break if end_pos
@@ -35,8 +35,29 @@ class Chess
     @playboard.move(start_pos, end_pos)
   end
 
-  def select_piece
+  def select_piece(color)
+    selected_pos = @screen.selected_pos
+    until selected_pos
+      input = @screen.interact
+      if input.is_a?(Array)
+        space = @playboard[input]
+        if space.is_a?(Piece) && space.color == color
+          selected_pos = input
+          plays = @playboard.possible_moves(@playboard[input])
+          plays.select! { |move| @playboard.valid_move?(space, move) }
+          if plays.empty?
+            selected_pos = nil
+            plays = nil
+          end
+        end
+      end
 
+      @screen.plays = plays
+      @screen.selected_pos = selected_pos
+
+    end
+
+    selected_pos
   end
 
   def switch_players

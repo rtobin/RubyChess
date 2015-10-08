@@ -68,6 +68,7 @@ class Piece
   def dup
     piece = self.class.new(self.current_pos, self.color)
     piece.first_move = self.first_move if self.is_a?(Pawn)
+    piece
   end
 
 
@@ -75,7 +76,7 @@ end
 
 class Pawn < Piece
   NAME = :pawn
-  attr_reader :first_move
+  attr_accessor :first_move
 
   def initialize(current_pos, color, first_move = true)
     @first_move = first_move
@@ -83,8 +84,8 @@ class Pawn < Piece
   end
 
   def change_pos(pos)
+    @first_move = false
     super
-    first_move = false
   end
 
   def board_moves

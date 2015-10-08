@@ -24,25 +24,21 @@ class Board
   end
 
   def move(start_pos, end_pos)
+    #save_piece = self[end_pos] if self[end_pos].is_a?(Piece)
     self[end_pos] = self[start_pos]
     self[end_pos].change_pos(end_pos)
     self[start_pos] = nil
-
+    #return save_piece
   end
 
   def valid_move?(piece, end_pos)
     # other validation is done in display
     # return false if the move puts oneself in check
+    trial_board = dup
     color = piece.color
     start_pos = piece.current_pos
-    move(start_pos, end_pos)
-    result = true
-    result = false if in_check?(color)
-
-    #reset
-    move(end_pos, start_pos)
-
-    result
+    trial_board.move(start_pos, end_pos)
+    ! trial_board.in_check?(color)
   end
 
   def in_check?(color)
@@ -122,11 +118,13 @@ class Board
   end
 
   def dup
-    @grid.map do |row|
+    dup_board = @grid.map do |row|
       row.map do |space|
         space.is_a?(Piece) ? space.dup : nil
       end
     end
+
+    Board.new(dup_board)
   end
 
 

@@ -6,6 +6,8 @@ class Display
   SCREEN_WIDTH = 80
   include Cursorable
 
+  attr_accessor :plays, :selected_pos
+
   def initialize(playboard)
     @playboard = playboard
     @dim = Board::DIM
@@ -14,29 +16,35 @@ class Display
     @plays = nil
   end
 
-  def get_start_square(color)
-    until @selected_pos
-      system("clear")
-      render_board
-      input = get_input
-      if input.is_a?(Array)
-        space = @playboard[input]
-        if space.is_a?(Piece) && space.color == color
-          @selected_pos = input
-          @plays = @playboard.possible_moves(@playboard[input])
-          @plays.select { |move| @playboard.valid_move?(space, move) }
-          if @plays.empty?
-            @selected_pos = nil
-            @plays = nil
-          end
-        end
-      end
-    end
-
+  def interact
     system("clear")
     render_board
-    @selected_pos
+    get_input
   end
+
+  # def get_start_square(color)
+  #   until @selected_pos
+  #     system("clear")
+  #     render_board
+  #     input = get_input
+  #     if input.is_a?(Array)
+  #       space = @playboard[input]
+  #       if space.is_a?(Piece) && space.color == color
+  #         @selected_pos = input
+  #         @plays = @playboard.possible_moves(@playboard[input])
+  #         @plays.select! { |move| @playboard.valid_move?(space, move) }
+  #         if @plays.empty?
+  #           @selected_pos = nil
+  #           @plays = nil
+  #         end
+  #       end
+  #     end
+  #   end
+  #
+  #   system("clear")
+  #   render_board
+  #   @selected_pos
+  # end
 
   def get_target_square
     system("clear")
@@ -100,7 +108,7 @@ class Display
         line << space
       end
 
-      puts line.center(SCREEN_WIDTH)
+      puts line
     end
   end
 end
