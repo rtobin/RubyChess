@@ -25,8 +25,9 @@ class Board
 
   def move(start_pos, end_pos)
     self[end_pos] = self[start_pos]
+    self[end_pos].change_pos(end_pos)
     self[start_pos] = nil
-    self[end_pos].current_pos = end_pos
+
   end
 
   def valid_move?(piece, end_pos)

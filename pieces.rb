@@ -57,6 +57,10 @@ class Piece
     @color = color
   end
 
+  def change_pos(pos)
+    @current_pos = pos
+  end
+
   def unicode
     PIECE_UNICODE[self.class::NAME].ljust(2)
   end
@@ -76,6 +80,11 @@ class Pawn < Piece
   def initialize(current_pos, color, first_move = true)
     @first_move = first_move
     super(current_pos, color)
+  end
+
+  def change_pos(pos)
+    super
+    first_move = false
   end
 
   def board_moves
