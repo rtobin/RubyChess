@@ -24,13 +24,12 @@ class Piece
 
 
     PIECE_UNICODE = {
-      king:   ["♚", "♔"],
-      queen:  ["♛", "♕"],
-      rook:   ["♜", "♖"],
-      bishop: ["♝", "♗"],
-      knight: ["♞", "♘"],
-      pawn:   ["♟", "♙"]
-
+      king:   "♚",
+      queen:  "♛",
+      rook:   "♜",
+      bishop: "♝",
+      knight: "♞",
+      pawn:   "♟"
     }
 
 
@@ -59,7 +58,7 @@ class Piece
   end
 
   def unicode
-    PIECE_UNICODE[self.class::NAME]
+    PIECE_UNICODE[self.class::NAME].ljust(2)
   end
 
   def dup

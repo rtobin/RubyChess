@@ -3,6 +3,7 @@ require "colorize"
 require_relative "pieces"
 
 class Display
+  SCREEN_WIDTH = 80
   include Cursorable
 
   def initialize(playboard)
@@ -58,66 +59,48 @@ class Display
       @selected_pos = nil
       @plays = nil
       return input
-    end      
+    end
 
     nil
 
   end
 
-  def render_board # dummy board
+  def render_board
     (0...@dim).each do |row|
       line = ""
       (0...@dim).each do |col|
         el = @playboard[[row, col]]
         color = el.color unless el.nil?
 
-        # cusor position
-        if [row, col] == @cursor_pos
-          if el.nil?
-            space =  "".ljust(2).on_light_yellow
-          else
-            space = el.unicode[0].ljust(2).colorize(:color => el.color).on_light_yellow
-          end
-
-        # selected piece
-      elsif [row, col] == @selected_pos
-          if el.nil?
-            space =  "".ljust(2).on_light_blue
-          else
-            space = el.unicode[0].ljust(2).colorize(:color => el.color).on_light_blue
-          end
-
-        # possible moves
-      elsif @plays && @plays.include?([row, col])
-          if el.nil?
-            space =  "".ljust(2).on_light_green
-          else
-            space = el.unicode[0].ljust(2).colorize(:color => el.color).on_light_green
-          end
+        if el.nil?
+          space = "  "
+        else
+          space = el.unicode
+          el.color == :white ? space = space.light_white : space = space.colorize(el.color)
+        end
 
         # white square
-        elsif ( row.even? && col.even? ) || ( row.odd? && col.odd? )
-          if el.nil?
-            space =  "".ljust(2).on_white
-          else
-            el.color == :white ? space = el.unicode[1] : space = el.unicode[0]
-            space = space.ljust(2).black.on_white
-          end
+        if ( row.even? && col.even? ) || ( row.odd? && col.odd? )
+          space = space.colorize(:background => :white)
 
-        # black square
-        else
-          if el.nil?
-            space =  "".ljust(2).on_black
-          else
-            el.color == :black ? space = el.unicode[1] : space = el.unicode[0]
-            space = space.ljust(2).white.on_black
-          end
+        else # black square
+          space = space.colorize(:background => :light_black)
         end
+
+        # selected piece
+        space = space.on_light_blue if [row, col] == @selected_pos
+
+        # possible moves
+        space = space.on_light_green if @plays && @plays.include?([row, col])
+
+        # cusor position
+        space = space.on_light_yellow if [row, col] == @cursor_pos
+
 
         line << space
       end
 
-      puts line
+      puts line.center(SCREEN_WIDTH)
     end
   end
 end

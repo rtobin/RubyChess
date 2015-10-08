@@ -35,6 +35,10 @@ class Chess
     @playboard.move(start_pos, end_pos)
   end
 
+  def select_piece
+
+  end
+
   def switch_players
     @current_player, @next_player = @next_player, @current_player
   end
