@@ -1,6 +1,14 @@
 require_relative "pieces"
 class Board
   DIM = 8
+  PIECE_POINTS = {
+    pawn:   1.0,
+    knight: 2.4,
+    bishop: 4.0,
+    rook:   6.4,
+    queen:  10.4,
+    king:   3.0
+  }
 
   attr_reader :grid
 
@@ -39,6 +47,11 @@ class Board
     start_pos = piece.current_pos
     trial_board.move(start_pos, end_pos)
     ! trial_board.in_check?(color)
+  end
+
+  def checkmate?(color)
+    piece_moves = possible_moves(self[find_king(color)])
+    true if in_check?(color) && piece_moves.empty?
   end
 
   def in_check?(color)

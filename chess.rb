@@ -15,10 +15,12 @@ class Chess
   end
 
   def play
-    until gameover?
+    until @playboard.checkmate?(@current_player.color)
       move
       switch_players
     end
+
+    puts "#{@next_player} wins!"
   end
 
   def move
@@ -26,8 +28,7 @@ class Chess
     else
       while true
         start_pos = select_piece(@current_player.color)
-        end_pos = @screen.get_target_square
-
+        end_pos = select_target
         break if end_pos
       end
     end
@@ -60,11 +61,22 @@ class Chess
     selected_pos
   end
 
-  def switch_players
-    @current_player, @next_player = @next_player, @current_player
+  def select_target
+    while true
+      break if (input = @screen.interact)
+    end
+
+    if input == :unselect || (input.is_a?(Array) && @screen.plays.include?(input))
+      @screen.selected_pos = nil
+      @screen.plays = nil
+      return input unless input  == :unselect
+    end
+
+    nil
   end
 
-  def gameover?
+  def switch_players
+    @current_player, @next_player = @next_player, @current_player
   end
 
 

@@ -20,15 +20,7 @@ class Player
 end
 
 class ChessAI < Player
-  PIECE_POINTS = {
-    pawn:   1.0,
-    knight: 2.4,
-    bishop: 4.0,
-    rook:   6.4,
-    queen:  10.4,
-    king:   3.0
-  }
-
+  
   S_VAL = 0.5
 
   attr_reader :pieces_avail
