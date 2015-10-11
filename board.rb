@@ -1,4 +1,5 @@
 require_relative "pieces"
+require "byebug"
 class Board
   DIM = 8
   PIECE_POINTS = {
@@ -29,6 +30,7 @@ class Board
   def initialize(grid)
     @grid = grid
     @king_pieces = get_king_pieces
+    @movehistory = []
   end
 
   def move(start_pos, end_pos)
@@ -42,6 +44,7 @@ class Board
   def valid_move?(piece, end_pos)
     # other validation is done in display
     # return false if the move puts oneself in check
+    return false unless piece.is_a?(Piece)
     trial_board = dup
     color = piece.color
     start_pos = piece.current_pos
@@ -50,8 +53,22 @@ class Board
   end
 
   def checkmate?(color)
-    piece_moves = possible_moves(self[find_king(color)])
-    true if in_check?(color) && piece_moves.empty?
+    piece_moves = []
+    if in_check?(color)
+      (0...DIM).each do |row|
+        (0...DIM).each do |col|
+          piece = @grid[row][col]
+          if piece.is_a?(Piece) && piece.color == color
+            piece_moves += possible_moves(piece).select { |move| valid_move?(piece, move) }
+          end
+        end
+      end
+
+      piece_moves.empty?
+
+    else
+      false
+    end
   end
 
   def in_check?(color)
@@ -59,8 +76,11 @@ class Board
     (0...DIM).each do |row|
       (0...DIM).each do |col|
         piece = @grid[row][col]
-        if piece && piece.color != color
-          possible_moves(piece).each { |pos| return true if pos == king_pos}
+        if piece.is_a?(Piece) && piece.color != color
+          possible_moves(piece).each do |pos|
+
+            return true if pos == king_pos #&& valid_move?(piece, pos)
+          end
         end
       end
     end
@@ -69,7 +89,7 @@ class Board
   end
 
   def find_king(color)
-    @king_pieces.each { |piece| return piece.current_pos if piece.color == color}
+    @king_pieces.each { |piece| return piece.current_pos if piece.color == color }
   end
 
   def get_king_pieces
@@ -127,7 +147,7 @@ class Board
       end
     end
 
-    some_moves
+    some_moves#.select { |move| valid_move?(piece, move) }
   end
 
   def dup

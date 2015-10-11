@@ -20,11 +20,12 @@ class Chess
       switch_players
     end
 
-    puts "#{@next_player} wins!"
+    puts "#{@next_player.name} wins!"
   end
 
   def move
     if @current_player.is_a?(ChessAI)
+      #stuff
     else
       while true
         start_pos = select_piece(@current_player.color)
@@ -38,41 +39,51 @@ class Chess
 
   def select_piece(color)
     selected_pos = @screen.selected_pos
+    plays = @screen.plays
     until selected_pos
       input = @screen.interact
+
       if input.is_a?(Array)
         space = @playboard[input]
+
         if space.is_a?(Piece) && space.color == color
           selected_pos = input
-          plays = @playboard.possible_moves(@playboard[input])
-          plays.select! { |move| @playboard.valid_move?(space, move) }
-          if plays.empty?
+          plays = @playboard.possible_moves(space).select { |move|  @playboard.valid_move?(space, move) }
+
+          if plays.nil? || plays.empty?
             selected_pos = nil
-            plays = nil
+            plays = []
           end
         end
       end
 
-      @screen.plays = plays
-      @screen.selected_pos = selected_pos
-
     end
 
-    selected_pos
+    @screen.plays = plays;
+    @screen.selected_pos = selected_pos
   end
 
   def select_target
-    while true
-      break if (input = @screen.interact)
+
+    input = @screen.interact
+    (input = @screen.interact) until input
+
+    if input == :unselect
+      undo_selection
+      return nil
     end
 
-    if input == :unselect || (input.is_a?(Array) && @screen.plays.include?(input))
-      @screen.selected_pos = nil
-      @screen.plays = nil
-      return input unless input  == :unselect
+    if input.is_a?(Array) && @screen.plays.include?(input)
+      undo_selection
+      return input
     end
 
     nil
+  end
+
+  def undo_selection
+    @screen.selected_pos = nil
+    @screen.plays = nil
   end
 
   def switch_players
