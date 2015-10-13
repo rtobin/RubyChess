@@ -30,11 +30,11 @@ class Board
   def initialize(grid)
     @grid = grid
     @king_pieces = get_king_pieces
-    @movehistory = []
+    @dead_pieces = []
   end
 
   def move(start_pos, end_pos)
-    #save_piece = self[end_pos] if self[end_pos].is_a?(Piece)
+    @dead_pieces << self[end_pos] if self[end_pos].is_a?(Piece)
     self[end_pos] = self[start_pos]
     self[end_pos].change_pos(end_pos)
     self[start_pos] = nil

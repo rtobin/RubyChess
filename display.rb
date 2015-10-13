@@ -23,6 +23,17 @@ class Display
   end
 
   def render_board
+    # show eaten white pawns
+    puts @playboard.dead_pieces.select do |piece|
+      piece.color == white && piece.is_a?(Pawn)
+    end.map(&:unicode).join.white.on_black
+
+    # show eaten power pieces
+    puts @playboard.dead_pieces.select do |piece|
+      piece.color == white && ! piece.is_a?(Pawn)
+    end.map(&:unicode).join.white.on_black
+
+
     (0...@dim).each do |row|
       line = ""
       (0...@dim).each do |col|
