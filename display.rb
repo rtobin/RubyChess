@@ -24,15 +24,16 @@ class Display
 
   def render_board
     # show eaten white pawns
-    puts @playboard.dead_pieces.select do |piece|
-      piece.color == white && piece.is_a?(Pawn)
-    end.map(&:unicode).join.white.on_black
+    white_pawns = @playboard.dead_pieces.select do |piece|
+      piece.color == :white && piece.is_a?(Pawn)
+    end
+    puts white_pawns.map(&:unicode).join.ljust(16).white.on_light_black
 
-    # show eaten power pieces
-    puts @playboard.dead_pieces.select do |piece|
-      piece.color == white && ! piece.is_a?(Pawn)
-    end.map(&:unicode).join.white.on_black
-
+    # show eaten white power pieces
+    white_non_pawns = @playboard.dead_pieces.select do |piece|
+      piece.color == :white && ! piece.is_a?(Pawn)
+    end
+    puts white_non_pawns.map(&:unicode).join.ljust(16).white.on_light_black
 
     (0...@dim).each do |row|
       line = ""
@@ -64,11 +65,26 @@ class Display
         # cusor position
         space = space.on_light_yellow if [row, col] == @cursor_pos
 
+        # highlight in check king red
+        space = space.on_light_red if el.is_a?(King) && @playboard.in_check?(color)
 
         line << space
       end
 
       puts line
     end
+
+    # show eaten black power pieces
+    white_non_pawns = @playboard.dead_pieces.select do |piece|
+      piece.color == :black && ! piece.is_a?(Pawn)
+    end
+    puts white_non_pawns.map(&:unicode).join.ljust(16).black.on_light_black
+
+    # show eaten black pawns
+    white_pawns = @playboard.dead_pieces.select do |piece|
+      piece.color == :black && piece.is_a?(Pawn)
+    end
+    puts white_pawns.map(&:unicode).join.ljust(16).black.on_light_black
+
   end
 end

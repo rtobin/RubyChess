@@ -11,7 +11,7 @@ class Board
     king:   3.0
   }
 
-  attr_reader :grid
+  attr_reader :grid, :dead_pieces
 
   def self.starting_board
     grid = Array.new(DIM) { Array.new(DIM) }
