@@ -18,17 +18,20 @@ class Chess
 
   def play
     until @playboard.checkmate?(@current_player.color)
+      # check if stuck in a loop
+      break if @playboard.move_history.length > 150
       move
 
       switch_players
     end
 
-    puts "#{@next_player.name} wins!"
+    puts @playboard.checkmate?(@current_player.color) ? "#{@next_player.name} wins!" : "DRAW!!!"
   end
 
   def move
     if @current_player.is_a?(ChessAI)
-      #stuff
+      @screen.render_board(@current_player)
+      start_pos, end_pos = @current_player.get_best_move(@playboard)
     else
       while true
         start_pos = select_piece(@current_player.color)
@@ -44,7 +47,7 @@ class Chess
     selected_pos = @screen.selected_pos
     plays = @screen.plays
     until selected_pos
-      input = @screen.interact
+      input = @screen.interact(@current_player)
 
       if input.is_a?(Array)
         space = @playboard[input]
@@ -97,8 +100,16 @@ class Chess
 end
 
 if __FILE__ == $PROGRAM_NAME
-  ryan = Player.new("Ryan")
-  tracy = Player.new("Tracy")
-  game = Chess.new(ryan, tracy)
+
+  puts "What is white's name? (or press enter for super smart AI)"
+  p1name = gets.chomp
+  player1 = p1name == "" ? ChessAI.new() : Player.new(p1name)
+  puts "    " + player1.name if p1name == ""
+  puts "\nWhat is black's name? (or press enter for super smart AI)"
+  p2name = gets.chomp
+  player2 = p2name == "" ? ChessAI.new() : Player.new(p2name)
+  puts "    " + player2.name if p2name == ""
+  puts "\nReady for chess?"
+  game = Chess.new(player1, player2)
   game.play
 end

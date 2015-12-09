@@ -28,22 +28,17 @@ class ChessAI < Player
 
   def initialize(name = nil, board = nil, level = 1)
     # level determines "depth" of search
-    name ||= "Chess Master Bot"
+    name ||= ["Chess Master Bot", "Robo", "God", "Rex", "Terminator", "Lover",
+      "I Robot", "Rosey", "MechaGodzilla", "Tron", "Wall-E", "Fembot", "Dot Matrix",
+      "Skynet", "Sonny", "Optimus Prime", "C-3PO", "Agent Smith", "Robocop", "R2D2",
+      "HAL 9000"].sample
+
     super(name, board)
     @prev_move_list = [] # checks the amount of "level" moves ahead
     @color == :white ? @enemy_color = :black : @enemy_color = :white
     @level = level
 
   end
-
-  # def get_move(board)
-  #   start_pos = nil
-  #   end_pos = nil
-  #   max_score = -100
-  #   @pieces.each do |piece|
-  #     @playboard.possible_moves(piece).each do |go|
-  #       if move_score(board, piece.current_pos, go) > max_score
-  # end
 
   def get_best_move(board)
     # samples if no best move
@@ -54,7 +49,6 @@ class ChessAI < Player
   end
 
   def move_score(board, start_pos, end_pos)
-    byebug
     piece = board[start_pos]
     return nil unless piece.is_a?(Piece)
     trial_board = board.dup

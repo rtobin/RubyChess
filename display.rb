@@ -29,19 +29,19 @@ class Display
     @cursor_pos = [0, 0]
     @selected_pos = nil
     @plays = nil
-    @ai = ChessAI.new
+    # @ai = ChessAI.new
   end
 
-  def interact
+  def interact(current_player)
     system("clear")
-    render_board
-    puts @ai.board_score(@playboard, :white)
-    puts @ai.num_moves(@playboard, :white)
-    puts @ai.get_best_move(@playboard)
+    render_board(current_player)
+    # puts @ai.board_score(@playboard, :white)
+    # puts @ai.num_moves(@playboard, :white)
+    # puts @ai.get_best_move(@playboard)
     get_input
   end
 
-  def render_board
+  def render_board(current_player)
     # show eaten white pawns
 
     white_pawns = @playboard.dead_pieces.select do |piece|
@@ -112,6 +112,8 @@ class Display
     end
     pawns_str = black_pawns.map(&:unicode).join.ljust(24)
     puts pawns_str.colorize(background: COLOR_BORDER, color: PIECE_COLORS[:black])
+    puts "            " + current_player.color.to_s + "'s turn"
+    puts @playboard.move_history.map(&:to_s).join(",")
     puts "\nCTRL+C to exit game..."
   end
 end

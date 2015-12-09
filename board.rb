@@ -2,7 +2,7 @@ require_relative "pieces"
 class Board
   DIM = 8
 
-  attr_reader :grid, :dead_pieces
+  attr_reader :grid, :dead_pieces, :move_history
 
   class << self
 
