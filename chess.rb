@@ -19,13 +19,13 @@ class Chess
   def play
     until @playboard.checkmate?(@current_player.color)
       # check if stuck in a loop
-      break if @playboard.move_history.length > 150
+      break if @playboard.move_history.length > 250
       move
 
       switch_players
     end
 
-    puts @playboard.checkmate?(@current_player.color) ? "#{@next_player.name} wins!" : "DRAW!!!"
+    puts @playboard.checkmate?(@current_player.color) ? "\n#{@next_player.name} (#{@next_player.color}) wins!" : "\nDRAW!!!"
   end
 
   def move
@@ -71,8 +71,8 @@ class Chess
 
   def select_target
 
-    input = @screen.interact
-    (input = @screen.interact) until input
+    input = @screen.interact(@current_player)
+    (input = @screen.interact(@current_player)) until input
 
     if input == :unselect
       undo_selection
@@ -103,12 +103,34 @@ if __FILE__ == $PROGRAM_NAME
 
   puts "What is white's name? (or press enter for super smart AI)"
   p1name = gets.chomp
-  player1 = p1name == "" ? ChessAI.new() : Player.new(p1name)
+  if p1name == ""
+    puts "Choose intelligence level for white (1, 2, or 3 for 'easy', 'medium', or 'hard')"
+    p1level = gets.chomp.to_i
+    while ![1,2,3].include?(p1level)
+      puts "    (1, 2, or 3 for 'easy', 'medium', or 'hard')"
+      p1level = gets.chomp.to_i
+    end
+    player1 = ChessAI.new(nil, level=p1level)
+  else
+    player1 = Player.new(p1name)
+  end
   puts "    " + player1.name if p1name == ""
+
   puts "\nWhat is black's name? (or press enter for super smart AI)"
   p2name = gets.chomp
-  player2 = p2name == "" ? ChessAI.new() : Player.new(p2name)
-  puts "    " + player2.name if p2name == ""
+  if p2name == ""
+    puts "Choose intelligence level for black (1, 2, or 3 for 'easy', 'medium', or 'hard')"
+    p2level = gets.chomp.to_i
+    while ![1,2,3].include?(p2level)
+      puts "    (1, 2, or 3 for 'easy', 'medium', or 'hard')"
+      p2level = gets.chomp.to_i
+    end
+    player2 = ChessAI.new(nil, level=p2level)
+  else
+    player2 = Player.new(p2name)
+  end
+  puts "    " + player1.name if p2name == ""
+
   puts "\nReady for chess?"
   game = Chess.new(player1, player2)
   game.play

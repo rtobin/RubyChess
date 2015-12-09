@@ -33,7 +33,6 @@ class Display
   end
 
   def interact(current_player)
-    system("clear")
     render_board(current_player)
     # puts @ai.board_score(@playboard, :white)
     # puts @ai.num_moves(@playboard, :white)
@@ -43,7 +42,7 @@ class Display
 
   def render_board(current_player)
     # show eaten white pawns
-
+    system("clear")
     white_pawns = @playboard.dead_pieces.select do |piece|
       piece.color == :white && piece.is_a?(Pawn)
     end
@@ -113,8 +112,9 @@ class Display
     end
     pawns_str = black_pawns.map(&:unicode).join.ljust(24)
     puts pawns_str.colorize(background: COLOR_BORDER, color: PIECE_COLORS[:black])
-    puts "            " + current_player.color.to_s + "'s turn"
-    puts @playboard.move_history.map(&:to_s).join(",")
+    display_detail = current_player.is_a?(ChessAI) ? "AI level #{current_player.level}" : "human"
+    puts "  #{current_player.name}'s (#{display_detail}) turn  "
+    # puts @playboard.move_history.map(&:to_s).join(",")
     puts "\nCTRL+C to exit game..."
   end
 end

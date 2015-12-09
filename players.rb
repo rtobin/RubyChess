@@ -7,7 +7,7 @@
 # Move = Struct.new(:color, :piece, :start_pos, :end_pos)
 
 class Player
-  attr_reader :name, :color
+  attr_reader :name, :color, :level
 
   def initialize(name, board = nil)
     # doesn't do anything with board
@@ -26,7 +26,7 @@ class ChessAI < Player
 
   attr_reader :pieces
 
-  def initialize(name = nil, board = nil, level = 1)
+  def initialize(name = nil, level = 1, board = nil)
     # level determines "depth" of search
     name ||= ["Chess Master Bot", "Robo", "God", "Rex", "Terminator", "Lover",
       "I Robot", "Rosey", "MechaGodzilla", "Tron", "Wall-E", "Fembot", "Dot Matrix",
@@ -45,14 +45,31 @@ class ChessAI < Player
     # only checks one level ahead
     best_move = board.all_valid_moves(@color).shuffle.max_by do |start_pos, end_pos|
       # basic ai is just the next line and comment everything else in the block
-      # move_score(board, start_pos, end_pos)
-
-      trial_board = board.dup
-      trial_board.move(start_pos, end_pos)
-      trial_board.all_valid_moves(@enemy_color).inject(0) do |accum, move|
-        accum + move_score(trial_board, move[0], move[1])
+      if level == 1
+        points = move_score(board, start_pos, end_pos)
+      elsif level == 2
+        trial_board = board.dup
+        trial_board.move(start_pos, end_pos)
+        points = trial_board.all_valid_moves(@enemy_color).inject(0) do |accum, move|
+          accum + move_score(trial_board, move[0], move[1])
+        end
+      elsif level == 3
+        trial_board = board.dup
+        trial_board.move(start_pos, end_pos)
+        points = trial_board.all_valid_moves(@enemy_color).inject(0) do |accum, move|
+          trial_board2 = board.dup
+          trial_board2.move(move[0], move[1])
+          points2 =trial_board2.all_valid_moves(@color).inject(0) do |accum2, move2|
+            accum2 + move_score(trial_board2, move2[0], move2[1])
+          end
+          accum + points2 + rand * 16 - 8
+        end
       end
+
+      points + rand * 4 -2 # for a little stochasticity
     end
+
+    best_move
   end
 
   def move_score(board, start_pos, end_pos)
