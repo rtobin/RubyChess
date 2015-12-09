@@ -1,43 +1,71 @@
 require_relative "pieces"
-require "byebug"
 class Board
   DIM = 8
-  PIECE_POINTS = {
-    pawn:   1.0,
-    knight: 2.4,
-    bishop: 4.0,
-    rook:   6.4,
-    queen:  10.4,
-    king:   3.0
-  }
 
   attr_reader :grid, :dead_pieces
 
-  def self.starting_board
-    grid = Array.new(DIM) { Array.new(DIM) }
+  class << self
 
-    Piece::DEFAULT_WHITE_POSITIONS.each do |piece, positions|
-      positions.each { |pos| grid[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :white)}
+    def starting_board
+      grid = Array.new(DIM) { Array.new(DIM) }
+
+      Piece::DEFAULT_WHITE_POSITIONS.each do |piece, positions|
+        positions.each { |pos| grid[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :white)}
+      end
+
+      Piece::DEFAULT_BLACK_POSITIONS.each do |piece, positions|
+        positions.each { |pos| grid[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :black)}
+      end
+
+      Board.new(grid)
     end
 
-    Piece::DEFAULT_BLACK_POSITIONS.each do |piece, positions|
-      positions.each { |pos| grid[pos[0]][pos[1]] = Piece.create_piece(piece, pos, :black)}
+    def load_move_history(move_history)
+      board = starting_board
+      move_history.each do |go|
+        move(*go)
+      end
+
+      board
     end
 
-    Board.new(grid)
   end
+
 
   def initialize(grid)
     @grid = grid
     @king_pieces = get_king_pieces
     @dead_pieces = []
+    @move_history = []
   end
 
   def move(start_pos, end_pos)
+    piece = self[start_pos]
+    if piece.is_a?(King) && piece.first_move
+
+      if end_pos == [start_pos[0], start_pos[1] - 2]
+        # castle left
+        rook_piece = self[[start_pos[0], start_pos[1] - 4]]
+        rook_piece.change_pos([start_pos[0], start_pos[1] - 2])
+        self[[start_pos[0], start_pos[1] - 2]] = rook_piece
+        self[[start_pos[0], start_pos[1] - 4]] = nil
+
+      elsif end_pos == [start_pos[0], start_pos[1] + 2]
+        # castle right
+        rook_piece = self[[start_pos[0], start_pos[1] + 3]]
+        rook_piece.change_pos([start_pos[0], start_pos[1] + 1])
+        self[[start_pos[0], start_pos[1] + 1]] = rook_piece
+        self[[start_pos[0], start_pos[1] + 3]] = nil
+      end
+    end
+
+    @move_history << [start_pos, end_pos]
     @dead_pieces << self[end_pos] if self[end_pos].is_a?(Piece)
-    self[end_pos] = self[start_pos]
-    self[end_pos].change_pos(end_pos)
+    piece.change_pos(end_pos)
+    self[end_pos] = piece
     self[start_pos] = nil
+
+
     #return save_piece
   end
 
@@ -50,6 +78,17 @@ class Board
     start_pos = piece.current_pos
     trial_board.move(start_pos, end_pos)
     ! trial_board.in_check?(color)
+  end
+
+  def valid_moves(piece)
+    possible_moves(piece).select { |move| valid_move?(piece, move) }
+  end
+
+  def all_valid_moves(color)
+    pieces = grid.flatten.select { |square| square.is_a?(Piece) && square.color == color}
+    pieces.inject([]) do |acc, piece|
+      acc + valid_moves(piece).map { |end_pos| [piece.current_pos, end_pos]}
+    end
   end
 
   def checkmate?(color)
@@ -147,8 +186,28 @@ class Board
       end
     end
 
+    # check if castle is possible and add to moves list
+    if piece.is_a?(King) && piece.first_move
+      pos = piece.current_pos
+      left_rook = self[[pos[0], pos[1] - 4]]
+      right_rook = self[[pos[0], pos[1] + 3]]
+
+      if self[[pos[0], pos[1] + 1]].nil? &&
+           self[[pos[0], pos[1] + 2]].nil? &&
+           right_rook.is_a?(Rook) && right_rook.first_move
+        some_moves << [pos[0], pos[1] + 2]
+      end
+      if self[[pos[0], pos[1] - 1]].nil? &&
+           self[[pos[0], pos[1] - 2]].nil? &&
+           self[[pos[0], pos[1] - 3]].nil? &&
+           left_rook.is_a?(Rook) && left_rook.first_move
+        some_moves << [pos[0], pos[1] - 2]
+      end
+    end
     some_moves#.select { |move| valid_move?(piece, move) }
   end
+
+
 
   def dup
     dup_board = @grid.map do |row|

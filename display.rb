@@ -4,7 +4,22 @@ require_relative "pieces"
 
 class Display
   SCREEN_WIDTH = 80
+
+  PIECE_COLORS = { white: :white,
+                  black: :black
+  }
+
+  COLOR_LIGHT_SQUARE = :light_cyan
+  COLOR_DARK_SQUARE  = :cyan
+  COLOR_BORDER       = :light_blue
+  COLOR_CURSOR       = :light_cyan
+  COLOR_MOVES        = :light_green
+  COLOR_CHECKED_KING = :red
+  BORDER_SPACE       = "    ".colorize(background: COLOR_BORDER)
+
   include Cursorable
+
+
 
   attr_accessor :plays, :selected_pos
 
@@ -14,26 +29,36 @@ class Display
     @cursor_pos = [0, 0]
     @selected_pos = nil
     @plays = nil
+    @ai = ChessAI.new
   end
 
   def interact
     system("clear")
     render_board
+    puts @ai.board_score(@playboard, :white)
+    puts @ai.num_moves(@playboard, :white)
+    puts @ai.get_best_move(@playboard)
     get_input
   end
 
   def render_board
     # show eaten white pawns
+
     white_pawns = @playboard.dead_pieces.select do |piece|
       piece.color == :white && piece.is_a?(Pawn)
     end
-    puts white_pawns.map(&:unicode).join.ljust(16).white.on_light_black
+    pawns_str = white_pawns.map(&:unicode).join.ljust(24)
+
+    puts pawns_str.colorize(background: COLOR_BORDER, color: PIECE_COLORS[:white])
 
     # show eaten white power pieces
     white_non_pawns = @playboard.dead_pieces.select do |piece|
       piece.color == :white && ! piece.is_a?(Pawn)
     end
-    puts white_non_pawns.map(&:unicode).join.ljust(16).white.on_light_black
+
+    non_pawns_str = white_non_pawns.map(&:unicode).join.ljust(24)
+    puts non_pawns_str.colorize(background: COLOR_BORDER, color: PIECE_COLORS[:white])
+
 
     (0...@dim).each do |row|
       line = ""
@@ -45,15 +70,15 @@ class Display
           space = "  "
         else
           space = el.unicode
-          el.color == :white ? space = space.light_white : space = space.colorize(el.color)
+          space = space.colorize(color: PIECE_COLORS[el.color])
         end
 
         # white square
         if ( row.even? && col.even? ) || ( row.odd? && col.odd? )
-          space = space.colorize(:background => :white)
+          space = space.colorize(background: COLOR_LIGHT_SQUARE)
 
         else # black square
-          space = space.colorize(:background => :light_black)
+          space = space.colorize(background: COLOR_DARK_SQUARE)
         end
 
         # selected piece
@@ -71,20 +96,22 @@ class Display
         line << space
       end
 
-      puts line
+      puts BORDER_SPACE + line + BORDER_SPACE
     end
 
     # show eaten black power pieces
-    white_non_pawns = @playboard.dead_pieces.select do |piece|
+    black_non_pawns = @playboard.dead_pieces.select do |piece|
       piece.color == :black && ! piece.is_a?(Pawn)
     end
-    puts white_non_pawns.map(&:unicode).join.ljust(16).black.on_light_black
+    non_pawns_str = black_non_pawns.map(&:unicode).join.ljust(24)
+    puts non_pawns_str.colorize(background: COLOR_BORDER, color: PIECE_COLORS[:black])
 
     # show eaten black pawns
-    white_pawns = @playboard.dead_pieces.select do |piece|
+    black_pawns = @playboard.dead_pieces.select do |piece|
       piece.color == :black && piece.is_a?(Pawn)
     end
-    puts white_pawns.map(&:unicode).join.ljust(16).black.on_light_black
-
+    pawns_str = black_pawns.map(&:unicode).join.ljust(24)
+    puts pawns_str.colorize(background: COLOR_BORDER, color: PIECE_COLORS[:black])
+    puts "\nCTRL+C to exit game..."
   end
 end

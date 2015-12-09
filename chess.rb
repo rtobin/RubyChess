@@ -2,9 +2,11 @@ require_relative "board"
 require_relative "display"
 require_relative "players"
 require_relative "pieces"
+require "byebug"
 
 
 class Chess
+
   def initialize(player1, player2, board = nil)
     @current_player, @next_player = player1, player2
     @current_player.set_color(:white)
@@ -17,6 +19,7 @@ class Chess
   def play
     until @playboard.checkmate?(@current_player.color)
       move
+
       switch_players
     end
 

@@ -21,7 +21,14 @@ class Piece
       :king   => [[0, 4]],
       }
 
-
+      PIECE_POINTS = {
+        pawn:   1.0,
+        knight: 2.4,
+        bishop: 4.0,
+        rook:   6.4,
+        queen:  10.4,
+        king:   3.0
+      }
 
     PIECE_UNICODE = {
       king:   "♚",
@@ -63,6 +70,10 @@ class Piece
 
   def unicode
     PIECE_UNICODE[self.class::NAME].ljust(2)
+  end
+
+  def score
+    PIECE_POINTS[self.class::NAME]
   end
 
   def dup
@@ -165,25 +176,31 @@ end
 class Rook < SlidingPiece
   NAME = :rook
   DELTAS =[
-    [0, 1],
-    [1, 0],
-    [-1, 0],
-    [0, -1]
+    [ 0,  1],
+    [ 1,  0],
+    [-1,  0],
+    [ 0, -1]
   ]
+
+  attr_accessor :first_move
+  def initialize(current_pos, color, first_move = true)
+    @first_move = first_move
+    super(current_pos, color)
+  end
 
 end
 
 class Queen < SlidingPiece
   NAME = :queen
   DELTAS = [
-    [1, 1 ],
-    [1, -1],
-    [-1, 1],
+    [ 1,  1],
+    [ 1, -1],
+    [-1,  1],
     [-1, -1],
-    [0, 1],
-    [1, 0],
-    [-1, 0],
-    [0, -1]
+    [ 0,  1],
+    [ 1,  0],
+    [-1,  0],
+    [ 0, -1]
   ]
 
 
@@ -207,13 +224,19 @@ end
 class King < SteppingPiece
   NAME = :king
   DELTAS = [
-    [0 ,  1],
-    [0 , -1],
-    [1 ,  0],
+    [ 0,  1],
+    [ 0, -1],
+    [ 1,  0],
     [-1,  0],
     [ 1,  1],
     [ 1, -1],
     [-1,  1],
     [-1, -1]
   ]
+
+  attr_accessor :first_move
+  def initialize(current_pos, color, first_move = true)
+    @first_move = first_move
+    super(current_pos, color)
+  end
 end
