@@ -44,7 +44,14 @@ class ChessAI < Player
     # samples if no best move
     # only checks one level ahead
     best_move = board.all_valid_moves(@color).shuffle.max_by do |start_pos, end_pos|
-      move_score(board, start_pos, end_pos)
+      # basic ai is just the next line and comment everything else in the block
+      # move_score(board, start_pos, end_pos)
+
+      trial_board = board.dup
+      trial_board.move(start_pos, end_pos)
+      trial_board.all_valid_moves(@enemy_color).inject(0) do |accum, move|
+        accum + move_score(trial_board, move[0], move[1])
+      end
     end
   end
 

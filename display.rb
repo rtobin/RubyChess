@@ -88,8 +88,9 @@ class Display
         space = space.on_light_green if @plays && @plays.include?([row, col])
 
         # cusor position
-        space = space.on_light_yellow if [row, col] == @cursor_pos
-
+        unless current_player.is_a?(ChessAI)
+          space = space.on_light_yellow if [row, col] == @cursor_pos
+        end
         # highlight in check king red
         space = space.on_light_red if el.is_a?(King) && @playboard.in_check?(color)
 
