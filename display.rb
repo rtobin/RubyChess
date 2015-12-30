@@ -112,8 +112,8 @@ class Display
     end
     pawns_str = black_pawns.map(&:unicode).join.ljust(24)
     puts pawns_str.colorize(background: COLOR_BORDER, color: PIECE_COLORS[:black])
-    display_detail = current_player.is_a?(ChessAI) ? "AI level #{current_player.level}" : "human"
-    puts "  #{current_player.name}'s (#{display_detail}) turn  "
+    #display_detail = current_player.is_a?(ChessAI) ? "AI level #{current_player.level}" : "human"
+    puts "  #{current_player.name}'s turn (#{current_player.color}) "
     # puts @playboard.move_history.map(&:to_s).join(",")
     puts "\nCTRL+C to exit game..."
   end
