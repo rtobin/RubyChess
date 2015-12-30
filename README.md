@@ -19,18 +19,22 @@ $ ruby chess.rb
 ## Game Setup
 <ol>
   <li>Enter player names when prompted (or press enter to select a basic AI opponent)</li>
-  <li>Control the yellow highlight square with the arrow keys.
+  <li>Control the yellow highlight square with the arrow keys. 
+    <br/>
     <img src="images/chess_play0.png" />
   </li>
   <li>Select your desired piece to move with "enter" to see available moves.
   Then select one of the available moves and press "enter" again to commit the move.
+    <br/>
     <img src="images/chess_play1.png" />
   </li>
-  <li>Only legal moves will be displayed
+  <li>Only legal moves will be displayed.
+    <br/>
     <img src="images/chess_play2.png" />
   </li>
   <li>King will illuminate red if in check, and only available moves are ones that
     get the king out of check
+    <br/>
     <img src="images/chess_play3.png" />
   </li>
 </ol>
